@@ -5,18 +5,18 @@ import matplotlib.pyplot as plt
 cap = cv2.VideoCapture('cars.mp4')
 car_cascade=cv2.CascadeClassifier('myhaar.xml')
 bs = cv2.createBackgroundSubtractorKNN()
-frames = 0  
+frames = 0
 while True:
     ret, frame = cap.read()
     draw_frame=frame.copy()
     if type(frame) == type(None):
         break
     fgmask = bs.apply(frame.copy())  # 前景掩码
-    if (frames < 5):
-        frames += 1
-        continue
+    # if (frames < 5):
+    #     frames += 1
+    #     continue
     #gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    th = cv2.threshold(fgmask, 244, 255, cv2.THRESH_BINARY)[1]  # 二值化
+    th = cv2.threshold(fgmask, 254, 255, cv2.THRESH_BINARY)[1]  # 二值化
     eroded = cv2.erode(th, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2, 2)))  # 腐蚀
     dilated = cv2.dilate(eroded, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5,5)),iterations=2)  #膨胀
     #open=cv2.morphologyEx(th,cv2.MORPH_OPEN,cv2.getStructuringElement(cv2.MORPH_RECT,(3,3))) #开运算
@@ -28,7 +28,7 @@ while True:
         cv2.rectangle(draw_frame, (x, y), (x + w, y + h), (0, 255, 255), 1)
         roi = frame[y:y + h, x:x + w]  # 圈定感兴趣区域
         roi_gray=cv2.cvtColor(roi,cv2.COLOR_BGR2GRAY)
-        cars=car_cascade.detectMultiScale(roi_gray,1.05,3)  #对感兴趣区域利用haar-cascade-classifier 检测
+        cars=car_cascade.detectMultiScale(roi_gray,1.1,3)  #对感兴趣区域利用haar-cascade-classifier 检测
         for (x1,y1,w1,h1) in cars:
             cv2.rectangle(draw_frame,(x1+x,y1+y),(x1+w1+x,y1+h1+y),(0,0,255),2)
     frames = frames + 1
